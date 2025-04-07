@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span {
+  @apply drop-shadow-lg;
+}
+
+@media (min-width: 1100px) {
+  .nav-links {
+    @apply space-x-12; /* Consistent spacing */
+  }
+
+  .nav-link {
+    @apply text-2xl; /* Better readability */
+  }
+
+  /* Remove the margin from Reservation */
+  .nav-item.reservation-about {
+    @apply ml-0;
+  }
+
+  /* Add space between Reservation and About */
+  /* .about-link {
+    @apply ml-60; 
+  } */
+}
