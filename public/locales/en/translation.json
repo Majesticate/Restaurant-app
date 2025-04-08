@@ -1,0 +1,106 @@
+{
+    "home": "Home",
+    "menu": "Menu",
+    "restaurants": "Restaurants",
+    
+    "about": "About",
+    "contact": "Contact",
+    "logout": "Logout",
+    "orders": "Orders",
+    "login": "Login",
+    "navigation": {
+    "reservation": "Reservation"
+  },
+
+  
+    "aboutSection": {
+      "title": "Why Our Restaurant?",
+      "description": "We believe in quality ingredients, amazing flavors, and the best dining experience. Our chefs are passionate about creating memorable meals using only the finest ingredients.",
+      "cards": {
+        "chef": {
+          "title": "Expert Chefs",
+          "description": "Our chefs bring years of experience to the kitchen, crafting dishes with precision and love.",
+          "alt": "Chef at Work"
+        },
+        "ingredients": {
+          "title": "Fresh Ingredients",
+          "description": "We use only the freshest ingredients to create dishes that are flavorful and satisfying.",
+          "alt": "Fresh Ingredients"
+        },
+        "dining": {
+          "title": "Dining Experience",
+          "description": "Our restaurant offers a cozy and inviting ambiance, perfect for any occasion.",
+          "alt": "Dining Experience"
+        }
+      },
+      "reserveButton": "Make a Reservation"
+    },
+    "newsSection": {
+  "title": "Latest News",
+  "description": "Discover the exciting updates at our newly renovated restaurant in Lozenets! We've added stunning features to enhance your dining experience, from a refreshing garden space to a modern, cozy ambiance. Check out the latest developments and join us for a unique culinary adventure.",
+  "imageAlt": "Garden at our restaurant"
+}
+,"menuCategories": {
+  "title": "Our Menu",
+  "subtitle": "Explore our delicious selections",
+  "food": "Food",
+  "drinks": "Drinks",
+  "foodAlt": "Food",
+  "drinksAlt": "Drinks"
+},
+
+    "newProducts": {
+      "title": "New Selections",
+      "description": "Discover our latest additions"
+    }
+    ,
+    
+        "reservation": {
+          "title": "Make a Reservation",
+          "fullName": "Full Name",
+          "email": "Email",
+          "phone": "Phone Number",
+          "people": "Number of People",
+          "location": "Select Location",
+          "locations": {
+            "mall": "Shopping Mall",
+            "lozenets": "Lozenets",
+            "mladost": "Mladost",
+            "studentski": "Studentski"
+          },
+          "date": "Select Date",
+          "time": "Select Time",
+          "button": "Book Now",
+          "success": "Your reservation has been successfully made!",
+          "error": "There was an error with your reservation. Please try again."
+        }
+        ,
+        
+            "locationsSection": {
+              "title": "Our Locations",
+              "locations": [
+                {
+                  "name": "Downtown Diner",
+                  "address": "123 Main Street, Dubai, UAE",
+                  "description": "Experience fine dining in the heart of the city with our signature dishes and exclusive ambiance.",
+                  "button": "View Location"
+                },
+                {
+                  "name": "Seaside Café",
+                  "address": "456 Ocean Road, Dubai Marina, UAE",
+                  "description": "Enjoy a relaxing meal with a beautiful view of the ocean, featuring fresh seafood and refreshing drinks.",
+                  "button": "View Location"
+                },
+                {
+                  "name": "Skyline Rooftop",
+                  "address": "789 High Tower, Business Bay, UAE",
+                  "description": "Dine under the stars with a breathtaking skyline view and a curated selection of gourmet dishes.",
+                  "button": "View Location"
+                }
+              ]
+            }
+          
+          
+
+}
+  

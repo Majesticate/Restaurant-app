@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next"; // Import the translation hook
 
 const newItems = [
   { id: 1, name: "Grilled Salmon", image: "/images/pizza1.png" },
@@ -15,6 +16,7 @@ const newItems = [
 ];
 
 export default function NewProductsSection() {
+  const { t } = useTranslation(); // Get the translation function
   const [startIndex, setStartIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(4); // Default to 4 items
 
@@ -52,9 +54,11 @@ export default function NewProductsSection() {
 
   return (
     <div className="py-16 bg-white text-center bg-[url('/images/2.png')]">
-      <h2 className="text-4xl font-bold text-gray-900">New Selections</h2>
+      <h2 className="text-4xl font-bold text-gray-900">
+        {t("newProducts.title")}
+      </h2>
       <p className="text-gray-600 mt-2 mb-6 text-lg">
-        Discover our latest additions
+        {t("newProducts.description")}
       </p>
 
       <div className="relative max-w-8xl mx-auto flex items-center justify-center">

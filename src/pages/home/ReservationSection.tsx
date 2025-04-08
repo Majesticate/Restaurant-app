@@ -1,14 +1,23 @@
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
+import { useTranslation } from "react-i18next";
 
 const ReservationSection = () => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
     people: "",
     location: "",
+    date: new Date().toISOString().split("T")[0], // Default to today's date in the correct format
+    time: "",
   });
+
+  const [loading, setLoading] = useState(false); // Track loading state
+  const [success, setSuccess] = useState(""); // Track success message
+  const [error, setError] = useState(""); // Track error message
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -19,9 +28,11 @@ const ReservationSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const serviceID = "service_wask2yk"; // Replace with your EmailJS service ID
-    const templateID = "template_vu1qlwx"; // Replace with your EmailJS template ID
-    const publicKey = "9B8k7ZASRJMEHWL06"; // Replace with your EmailJS public key
+    setLoading(true); // Show loading state
+
+    const serviceID = "service_wask2yk";
+    const templateID = "template_vu1qlwx";
+    const publicKey = "9B8k7ZASRJMEHWL06";
 
     const emailParams = {
       fullName: formData.fullName,
@@ -29,15 +40,30 @@ const ReservationSection = () => {
       phone: formData.phone,
       people: formData.people,
       location: formData.location,
-      to_email: "Ivan4oto22@abv.bg", // Your email
+      date: formData.date,
+      time: formData.time,
+      to_email: "Ivan4oto22@abv.bg",
     };
 
     try {
       await emailjs.send(serviceID, templateID, emailParams, publicKey);
-      alert("Reservation request sent successfully!");
+      setSuccess(t("reservation.success")); // Show success message
+      setError(""); // Clear any previous error message
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        people: "",
+        location: "",
+        date: "",
+        time: "",
+      }); // Reset form
+      // window.scrollTo(0, 0); // Scroll to top of the page
     } catch (error) {
-      console.error("Error sending email:", error);
-      alert("Failed to send reservation request.");
+      setError(t("reservation.error")); // Show error message
+      setSuccess(""); // Clear success message
+    } finally {
+      setLoading(false); // Hide loading state
     }
   };
 
@@ -56,12 +82,12 @@ const ReservationSection = () => {
         />
 
         <div className="p-6 w-full md:w-2/3 lg:w-1/2 text-white">
-          <h2 className="text-4xl font-bold mb-6">Make a Reservation</h2>
+          <h2 className="text-4xl font-bold mb-6">{t("reservation.title")}</h2>
           <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
             <input
               type="text"
               name="fullName"
-              placeholder="Full Name"
+              placeholder={t("reservation.fullName")}
               className="p-3 border rounded-lg text-lg"
               value={formData.fullName}
               onChange={handleChange}
@@ -70,7 +96,7 @@ const ReservationSection = () => {
             <input
               type="email"
               name="email"
-              placeholder="Email"
+              placeholder={t("reservation.email")}
               className="p-3 border rounded-lg text-lg"
               value={formData.email}
               onChange={handleChange}
@@ -79,7 +105,7 @@ const ReservationSection = () => {
             <input
               type="tel"
               name="phone"
-              placeholder="Phone Number"
+              placeholder={t("reservation.phone")}
               className="p-3 border rounded-lg text-lg"
               value={formData.phone}
               onChange={handleChange}
@@ -88,7 +114,7 @@ const ReservationSection = () => {
             <input
               type="number"
               name="people"
-              placeholder="Number of People"
+              placeholder={t("reservation.people")}
               className="p-3 border rounded-lg text-lg"
               value={formData.people}
               onChange={handleChange}
@@ -96,26 +122,80 @@ const ReservationSection = () => {
             />
             <select
               name="location"
-              className="p-3 border rounded-lg text-lg"
+              className="p-3 border rounded-lg text-lg text-black"
               value={formData.location}
               onChange={handleChange}
               required
             >
-              <option className="text-gray-500" value="" disabled>
-                Select Restaurant Location
+              <option value="" disabled>
+                {t("reservation.location")}
               </option>
-              <option className="text-black">Mall of Sofia</option>
-              <option className="text-black">Lozenets</option>
-              <option className="text-black">Mladost</option>
-              <option className="text-black">Studentski grad</option>
+              <option>{t("reservation.locations.mall")}</option>
+              <option>{t("reservation.locations.lozenets")}</option>
+              <option>{t("reservation.locations.mladost")}</option>
+              <option>{t("reservation.locations.studentski")}</option>
+            </select>
+            <input
+              type="date"
+              name="date"
+              className="p-3 border rounded-lg text-lg text-black"
+              value={formData.date}
+              onChange={handleChange}
+              required
+              placeholder={t("reservation.date")} // This will display the translated 'Select Date' or 'Изберете дата'
+            />
+            <select
+              name="time"
+              className="p-3 border rounded-lg text-lg text-black"
+              value={formData.time}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                {t("reservation.time")}
+              </option>
+              {[
+                "12:00",
+                "12:30",
+                "13:00",
+                "13:30",
+                "14:00",
+                "14:30",
+                "15:00",
+                "15:30",
+                "16:00",
+                "16:30",
+                "17:00",
+                "17:30",
+                "18:00",
+                "18:30",
+                "19:00",
+                "19:30",
+                "20:00",
+                "20:30",
+                "21:00",
+              ].map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
             </select>
 
-            <button
-              type="submit"
-              className="bg-yellow-500 text-black p-2 text-sm rounded-lg font-semibold hover:bg-yellow-600 w-[250px] mx-auto"
-            >
-              Book Now
-            </button>
+            {loading ? (
+              <div className="text-yellow-500 p-2">
+                Please wait, sending your reservation...
+              </div>
+            ) : (
+              <button
+                type="submit"
+                className="bg-yellow-500 text-black p-2 text-sm rounded-lg font-semibold hover:bg-yellow-600 w-[250px] mx-auto"
+              >
+                {t("reservation.button")}
+              </button>
+            )}
+
+            {success && <div className="text-green-500 mt-4">{success}</div>}
+            {error && <div className="text-red-500 mt-4">{error}</div>}
           </form>
         </div>
       </div>
