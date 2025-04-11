@@ -30,9 +30,9 @@ const ReservationSection = () => {
 
     setLoading(true); // Show loading state
 
-    const serviceID = "service_wask2yk";
-    const templateID = "template_vu1qlwx";
-    const publicKey = "9B8k7ZASRJMEHWL06";
+    const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_RESERVATION;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
     const emailParams = {
       fullName: formData.fullName,
@@ -42,7 +42,6 @@ const ReservationSection = () => {
       location: formData.location,
       date: formData.date,
       time: formData.time,
-      to_email: "Ivan4oto22@abv.bg",
     };
 
     try {

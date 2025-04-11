@@ -62,16 +62,15 @@ const ContactForm = () => {
       return;
     }
 
-    const serviceID = "service_wask2yk"; // Your EmailJS service ID
-    const templateID = "template_vu1qlwx"; // Your EmailJS template ID for the contact form
-    const publicKey = "9B8k7ZASRJMEHWL06"; // Your EmailJS public key
+    const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONTACT;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
     const emailParams = {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       message: formData.message,
-      to_email: "Ivan4oto22@abv.bg", // This should match the EmailJS template variable
     };
 
     try {
