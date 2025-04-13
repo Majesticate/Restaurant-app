@@ -14,6 +14,8 @@ import RegisterForm from "./register/Register";
 import Orders from "./pages/order/Orders";
 import AddProductPage from "./admin/AddProductPage";
 import AdminRoute from "./admin/AdminRoute";
+import AdminNewOrders from "./admin/AdminNewOrders";
+import AdminPastOrders from "./admin/AdminPastOrders";
 // import Delivery from "./pages/cart/Delivery";
 
 const App = () => {
@@ -46,6 +48,8 @@ const App = () => {
           {/* <Route path="/delivery" element={<Delivery />} /> */}
           <Route path="/admin" element={<AdminRoute />}>
             <Route path="/admin/add-product" element={<AddProductPage />} />
+            <Route path="/admin/new-orders" element={<AdminNewOrders />} />
+            <Route path="/admin/past-orders" element={<AdminPastOrders />} />
           </Route>
         </Routes>
       </main>

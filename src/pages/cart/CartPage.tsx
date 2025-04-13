@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 import Sidebar from "./Sidebar";
+import { useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth"; // Import Firebase Authentication
 
 const CartPage = ({
   cart,
@@ -9,6 +11,7 @@ const CartPage = ({
   cart: any[];
   setCart: React.Dispatch<React.SetStateAction<any[]>>;
 }) => {
+  const navigate = useNavigate(); // For navigation
   const deliveryFee = 5;
   const [showDeliveryForm, setShowDeliveryForm] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash");
@@ -19,6 +22,13 @@ const CartPage = ({
     address: "",
   });
   const deliveryFormRef = useRef<HTMLDivElement>(null);
+
+  // Check if the user is logged in using Firebase Auth
+  const checkUserLoggedIn = () => {
+    const auth = getAuth();
+    const user = auth.currentUser; // Get the current user
+    return user; // If user is logged in, return user object
+  };
 
   const increaseQuantity = (id: number) => {
     setCart((prevItems) =>
@@ -85,6 +95,17 @@ const CartPage = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Handle the Next button click, check if user is logged in
+  const handleNext = () => {
+    const user = checkUserLoggedIn(); // Check if user is logged in
+    if (!user) {
+      // If no user, redirect to login page
+      navigate("/login");
+    } else {
+      setShowDeliveryForm(true); // If user is logged in, show the delivery form
+    }
+  };
 
   return (
     <div className="relative py-16 px-6 bg-[url('/images/2.png')] bg-cover bg-center min-h-screen flex flex-col items-center">
@@ -170,7 +191,7 @@ const CartPage = ({
             <p className="text-xl font-bold mt-2">Total: ${total.toFixed(2)}</p>
             <button
               className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-lg transition mt-4"
-              onClick={() => setShowDeliveryForm(true)}
+              onClick={handleNext} // Use the new handleNext function
             >
               Next
             </button>

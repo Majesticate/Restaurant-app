@@ -60,11 +60,11 @@ const MenuItems: React.FC<MenuItemsProps> = ({ items, addToCart, cart }) => {
       addToCart({ ...item, quantity: 1 }); // Ensure quantity starts from 1
       setPopupMessage(`${item.name} added to the cart!`);
       setShowPopup(true);
-      setTimeout(() => setShowPopup(false), 1500);
+      setTimeout(() => setShowPopup(false), 1000);
     } else {
       setPopupMessage(`${item.name} is already in the cart.`);
       setShowPopup(true);
-      setTimeout(() => setShowPopup(false), 1500);
+      setTimeout(() => setShowPopup(false), 1000);
     }
   };
 

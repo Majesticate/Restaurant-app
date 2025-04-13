@@ -93,15 +93,14 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
       )}
 
       {/* Language Switcher Button */}
-      <button
+      {/* <button
         onClick={() =>
           handleLanguageChange(i18n.language === "en" ? "bg" : "en")
         }
-        className="nav-link"
+        className="nav-link flex items-center space-x-1 relative"
       >
         {i18n.language === "en" ? "BG" : "EN"}{" "}
-        {/* Display BG or EN based on current language */}
-      </button>
+      </button> */}
     </nav>
   );
 };

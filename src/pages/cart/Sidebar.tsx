@@ -33,6 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const navigate = useNavigate();
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -65,14 +66,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleOrderClick = async () => {
+    if (loading) return; // Prevent multiple clicks
     if (localFormData.name && localFormData.address && cart.length > 0) {
       try {
+        setLoading(true); // Disable button
+
         const user = auth.currentUser;
 
-        // If user is logged in, save the order with userId and email
         const orderData: any = {
           name: localFormData.name,
-          email: user ? user.email : localFormData.email, // Use logged-in user's email or the form email
+          email: user ? user.email : localFormData.email,
           address: localFormData.address,
           items: cart,
           totalPrice: cart.reduce(
@@ -82,29 +85,29 @@ const Sidebar: React.FC<SidebarProps> = ({
           ),
           date: serverTimestamp(),
           paymentMethod,
+          status: {
+            "Order Requested": serverTimestamp(),
+            "Order Accepted": null,
+            "Picked Up": null,
+            Delivered: null,
+          },
+          currentStatus: "Order Requested",
         };
 
-        // If the user is logged in, include userId in the order
         if (user) {
           orderData.userId = user.uid;
         }
 
-        // Log the order data for debugging
-        console.log("Submitting Order:", orderData);
-
-        // Save the order to the Firestore collection
         await addDoc(collection(db, "orders"), orderData);
 
-        alert(
-          `Thank you for your order, ${localFormData.name}! Your order has been placed successfully.`
-        );
-
-        // Clear the cart and navigate to the home page after the order is placed
+        alert(`Thank you for your order, ${localFormData.name}!`);
         setCart([]);
         navigate("/");
       } catch (error) {
         console.error("Error placing order: ", error);
         alert("Failed to place order. Please try again.");
+      } finally {
+        setLoading(false); // Re-enable button
       }
     } else {
       alert(
@@ -270,10 +273,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             type="button"
-            className="w-full py-2 mt-4 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition"
+            className={`w-full py-2 mt-4 font-bold rounded-lg transition ${
+              loading
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-yellow-500 text-white hover:bg-yellow-600"
+            }`}
             onClick={handleOrderClick}
+            disabled={loading}
           >
-            Order
+            {loading ? "Placing Order..." : "Order"}
           </button>
         </form>
       </div>

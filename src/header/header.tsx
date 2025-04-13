@@ -60,6 +60,25 @@ const Header = ({ cartCount }: { cartCount: number }) => {
               </button>
             </Link>
           )}
+          {user && role === "admin" && (
+            <>
+              <Link
+                className="flex items-center hover:text-yellow-500 font-semibold"
+                to="/admin/new-orders"
+              >
+                New Orders
+              </Link>
+              <Link
+                className="flex items-center hover:text-yellow-500 font-semibold"
+                to="/admin/past-orders"
+              >
+                Past Orders
+              </Link>
+            </>
+          )}
+          {user && role === "delivery" && (
+            <Link to="/delivery/orders">My Deliveries</Link>
+          )}
         </div>
 
         {/* Logo */}

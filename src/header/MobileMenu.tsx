@@ -66,7 +66,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             }
           }}
         >
-          {t("reservation")}
+          {t("navigation.reservation")}
         </Link>
         <Link
           to="/about"

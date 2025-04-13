@@ -14,7 +14,7 @@ const NewsSection2 = () => {
       </p>
 
       {/* News Image as Link */}
-      <Link to="/news" className="mt-8 inline-block">
+      <Link to="/" className="mt-8 inline-block">
         <img
           src="/images/garden.jpg"
           alt={t("newsSection.imageAlt")}

@@ -9,6 +9,7 @@ const products = [
     description:
       "A delicious combination of fresh tomatoes, mozzarella, and basil.",
     link: "/products/margherita",
+    category: "Pizzas",
   },
   {
     image: "/images/pizza2.png",
@@ -16,6 +17,7 @@ const products = [
     description:
       "Loaded with spicy pepperoni and melted cheese on a crispy crust.",
     link: "/products/pepperoni",
+    category: "Pizzas",
   },
   {
     image: "/images/pizza3.png",
@@ -23,6 +25,7 @@ const products = [
     description:
       "Topped with fresh bell peppers, mushrooms, onions, and olives.",
     link: "/products/veggie",
+    category: "Pizzas",
   },
   {
     image: "/images/pasta.png",
@@ -30,6 +33,7 @@ const products = [
     description:
       "Rich and creamy Alfredo sauce served over perfectly cooked pasta.",
     link: "/products/alfredo",
+    category: "Pastas",
   },
 ];
 
@@ -45,6 +49,11 @@ const ProductSection = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? products.length - 1 : prevIndex - 1
     );
+  };
+  const handleViewProductClick = () => {
+    // Navigate to the menu page with the 'Pizzas' category
+    navigate("/menu");
+    // Optional: you could also trigger the category change on the sidebar here
   };
 
   return (
@@ -66,7 +75,7 @@ const ProductSection = () => {
             {products[currentIndex].description}
           </p>
           <a
-            href={products[currentIndex].link}
+            onClick={handleViewProductClick} // Add onClick to handle the view product click
             className="inline-block mt-4 bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600 transition"
           >
             View Product

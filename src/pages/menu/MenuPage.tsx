@@ -10,7 +10,7 @@ const defaultMenuItems = [
   {
     id: "static-1",
     name: "Caesar Salad",
-    category: ["Salad"], // Category is now an array
+    category: ["Salads", "news"], // Category is now an array
     image: "/images/ceasar.jpg",
     description: "Lettuce, parmesan, croutons, caesar dressing.",
     price: 3.0,
@@ -35,10 +35,11 @@ const defaultMenuItems = [
 
 const categories = [
   "All",
-  "Salad",
+  "Salads",
   "Soups",
   "Fish",
   "Chicken",
+  "Beef",
   "Pastas",
   "Pizzas",
   "Burgers",
@@ -61,49 +62,42 @@ const MenuPage = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Get the category from the URL if it exists
+    const categoryFromUrl = location.pathname.split("/")[2];
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl); // Set the category to Pizzas if the URL has '/menu/pizzas'
+    }
+
     setLoading(true);
     console.log("Fetching menu for category:", selectedCategory);
 
-    // Now we will query Firestore for categories that match
     let menuQuery =
       selectedCategory === "All"
         ? collection(db, "menuItems")
         : query(
             collection(db, "menuItems"),
-            where("category", "array-contains", selectedCategory) // Use 'array-contains' to match categories in an array
+            where("category", "array-contains", selectedCategory)
           );
 
     const unsubscribe = onSnapshot(menuQuery, (snapshot) => {
-      console.log("Snapshot data:", snapshot.docs);
-
       const fetchedItems = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      console.log("Fetched items from Firebase:", fetchedItems);
-
-      // Merge default items and fetched Firestore items
       const filteredDefaults =
         selectedCategory === "All"
           ? defaultMenuItems
-          : defaultMenuItems.filter(
-              (item) => item.category.includes(selectedCategory) // Check if the selected category exists in the array
+          : defaultMenuItems.filter((item) =>
+              item.category.includes(selectedCategory)
             );
 
-      console.log("Default items:", filteredDefaults);
-
       setMenuItems([...filteredDefaults, ...fetchedItems]);
-
-      console.log("Final menuItems state:", [
-        ...filteredDefaults,
-        ...fetchedItems,
-      ]);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [selectedCategory]);
+  }, [selectedCategory, location.pathname]);
 
   const addToCart = (item: any) => {
     setCart([...cart, item]);
