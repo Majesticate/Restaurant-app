@@ -6,50 +6,50 @@ import { useNavigate } from "react-router-dom";
 const AddProductPage = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [category, setCategory] = useState(""); // For multiple categories, this will be a comma-separated string
+  const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // 🔄 New loading state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate the form fields
+    if (loading) return; // Prevent multiple rapid clicks
+
     if (!name || !category || !description || !price || !image) {
       setError("All fields are required");
       return;
     }
 
-    const parsedPrice = parseFloat(price); // Convert price to a number
-
+    const parsedPrice = parseFloat(price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
       setError("Price must be a positive number");
       return;
     }
 
-    // Convert comma-separated categories to an array
     const categoryArray = category.split(",").map((cat) => cat.trim());
+    setLoading(true); // Start loading
 
     try {
-      // Add new product to Firestore
       await addDoc(collection(db, "menuItems"), {
         name,
-        category: categoryArray, // Store categories as an array
+        category: categoryArray,
         description,
-        price: parsedPrice, // Store price as a number
+        price: parsedPrice,
         image,
       });
 
-      // Redirect to the menu page after successful submission
       navigate("/menu");
     } catch (error: unknown) {
-      // Type assertion to 'Error'
       if (error instanceof Error) {
         setError("Error adding product: " + error.message);
       } else {
         setError("An unknown error occurred.");
       }
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -110,8 +110,14 @@ const AddProductPage = () => {
           />
         </div>
 
-        <button type="submit" className="bg-blue-500 p-2 rounded-lg text-white">
-          Add Product
+        <button
+          type="submit"
+          className={`p-2 rounded-lg text-white w-full sm:w-auto ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500"
+          }`}
+          disabled={loading}
+        >
+          {loading ? "Adding..." : "Add Product"}
         </button>
       </form>
     </div>

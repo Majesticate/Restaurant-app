@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 import Sidebar from "./Sidebar";
 import { useNavigate } from "react-router-dom";
-import { getAuth } from "firebase/auth"; // Import Firebase Authentication
+import { getAuth } from "firebase/auth";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 const CartPage = ({
   cart,
@@ -11,61 +13,143 @@ const CartPage = ({
   cart: any[];
   setCart: React.Dispatch<React.SetStateAction<any[]>>;
 }) => {
-  const navigate = useNavigate(); // For navigation
+  const navigate = useNavigate();
   const deliveryFee = 5;
   const [showDeliveryForm, setShowDeliveryForm] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
-  const [showCardDetails, setShowCardDetails] = useState(false);
   const [formData] = useState({
     name: "",
     email: "",
     address: "",
   });
   const deliveryFormRef = useRef<HTMLDivElement>(null);
+  const auth = getAuth();
 
-  // Check if the user is logged in using Firebase Auth
   const checkUserLoggedIn = () => {
-    const auth = getAuth();
-    const user = auth.currentUser; // Get the current user
-    return user; // If user is logged in, return user object
+    const user = auth.currentUser;
+    return user;
   };
 
   const increaseQuantity = (id: number) => {
-    setCart((prevItems) =>
-      prevItems.map((item) =>
+    setCart((prevItems) => {
+      const updated = prevItems.map((item) =>
         item.id === id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
-      )
-    );
+      );
+      updateCartInFirestore(updated);
+      return updated;
+    });
   };
 
   const decreaseQuantity = (id: number) => {
-    setCart((prevItems) =>
-      prevItems.map((item) =>
+    setCart((prevItems) => {
+      const updated = prevItems.map((item) =>
         item.id === id && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
-      )
-    );
+      );
+      updateCartInFirestore(updated);
+      return updated;
+    });
   };
 
   const removeItem = (id: number) => {
-    setCart(cart.filter((item) => item.id !== id));
+    const updated = cart.filter((item) => item.id !== id);
+    setCart(updated);
+    updateCartInFirestore(updated);
   };
 
-  // Ensure every item in the cart has a quantity (defaults to 1 if missing)
+  const updateCartInFirestore = async (updatedCart: any[]) => {
+    const user = auth.currentUser;
+    if (user) {
+      const cartRef = doc(db, "carts", user.uid);
+      await setDoc(cartRef, { cart: updatedCart }, { merge: true });
+    }
+  };
+
   useEffect(() => {
-    setCart((prevCart) =>
-      prevCart.map((item) => ({
+    setCart((prevCart) => {
+      const initialized = prevCart.map((item) => ({
         ...item,
-        quantity: item.quantity ?? 1, // Ensure quantity starts from 1
-      }))
-    );
+        quantity: item.quantity ?? 1,
+      }));
+      updateCartInFirestore(initialized);
+      return initialized;
+    });
   }, []);
 
-  // Fix: Subtotal correctly calculates prices based on quantity
+  useEffect(() => {
+    const fetchCart = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const cartRef = doc(db, "carts", user.uid);
+        const cartSnap = await getDoc(cartRef);
+        if (cartSnap.exists()) {
+          const userCart = cartSnap.data().cart || [];
+          setCart(userCart);
+        }
+      }
+    };
+    fetchCart();
+  }, []);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      const user = auth.currentUser;
+
+      const localCartRaw = localStorage.getItem("cart");
+      let localCart: any[] = [];
+
+      try {
+        if (localCartRaw) {
+          localCart = JSON.parse(localCartRaw);
+        }
+      } catch (e) {
+        console.error("Failed to parse local cart:", e);
+      }
+
+      if (user) {
+        const cartRef = doc(db, "carts", user.uid);
+        const cartSnap = await getDoc(cartRef);
+        const firebaseCart = cartSnap.exists()
+          ? cartSnap.data().cart || []
+          : [];
+
+        // Merge logic
+        const mergedMap = new Map();
+
+        [...firebaseCart, ...localCart].forEach((item) => {
+          const existing = mergedMap.get(item.id);
+          if (existing) {
+            mergedMap.set(item.id, {
+              ...item,
+              quantity: (existing.quantity || 1) + (item.quantity || 1),
+            });
+          } else {
+            mergedMap.set(item.id, { ...item, quantity: item.quantity || 1 });
+          }
+        });
+
+        const mergedCart = Array.from(mergedMap.values());
+
+        // Save merged to Firebase & set state
+        await setDoc(cartRef, { cart: mergedCart }, { merge: true });
+        setCart(mergedCart);
+        localStorage.removeItem("cart"); // optional: clear local cart after sync
+      } else {
+        // User not logged in → just load localCart
+        setCart(localCart);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
   const subtotal = cart.reduce((total, item) => {
     const price = item.discountPrice ?? item.price;
-    const quantity = item.quantity || 1; // Default to 1 if undefined
+    const quantity = item.quantity || 1;
     return total + price * quantity;
   }, 0);
 
@@ -96,14 +180,12 @@ const CartPage = ({
     };
   }, []);
 
-  // Handle the Next button click, check if user is logged in
   const handleNext = () => {
-    const user = checkUserLoggedIn(); // Check if user is logged in
+    const user = checkUserLoggedIn();
     if (!user) {
-      // If no user, redirect to login page
       navigate("/login");
     } else {
-      setShowDeliveryForm(true); // If user is logged in, show the delivery form
+      setShowDeliveryForm(true);
     }
   };
 
@@ -191,7 +273,7 @@ const CartPage = ({
             <p className="text-xl font-bold mt-2">Total: ${total.toFixed(2)}</p>
             <button
               className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-lg transition mt-4"
-              onClick={handleNext} // Use the new handleNext function
+              onClick={handleNext}
             >
               Next
             </button>
@@ -210,3 +292,29 @@ const CartPage = ({
 };
 
 export default CartPage;
+
+// export const acceptDelivery = async (orderId: string) => {
+//   const auth = getAuth();
+//   const user = auth.currentUser;
+
+//   if (!user) {
+//     alert("You must be logged in to accept a delivery.");
+//     return;
+//   }
+
+//   try {
+//     const orderRef = doc(db, "orders", orderId);
+//     await updateDoc(orderRef, {
+//       deliveryPersonId: user.uid,
+//       deliveryPersonEmail: user.email,
+//       "status.Order Accepted": {
+//         timestamp: new Date().toISOString(),
+//         status: "Order Accepted",
+//       },
+//     });
+//     alert("You have successfully accepted the delivery.");
+//   } catch (error) {
+//     console.error("Error accepting delivery:", error);
+//     alert("Failed to accept delivery. Please try again.");
+//   }
+// };

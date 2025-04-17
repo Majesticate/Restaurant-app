@@ -102,7 +102,7 @@ const Orders: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/images/2.png')] bg-cover bg-center flex flex-col items-center p-6">
+    <div className="min-h-screen bg-[url('/images/2.png')] bg-center flex flex-col items-center p-6">
       <h2 className="text-white text-3xl font-bold mb-6 text-center">
         Your Orders
       </h2>

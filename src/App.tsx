@@ -1,5 +1,5 @@
-import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Home from "./pages/home/Home";
 import Header from "./header/header";
 import Footer from "./footer/Footer";
@@ -16,13 +16,31 @@ import AddProductPage from "./admin/AddProductPage";
 import AdminRoute from "./admin/AdminRoute";
 import AdminNewOrders from "./admin/AdminNewOrders";
 import AdminPastOrders from "./admin/AdminPastOrders";
-// import Delivery from "./pages/cart/Delivery";
+import DeliveryOrders from "./delivery/DeliveryOrdersPage";
+import CartInitializer from "./pages/cart/CartInitializer"; // Import CartInitializer
 
 const App = () => {
-  const [cart, setCart] = useState<any[]>([]); // Cart state to manage items in the cart
+  const [cart, setCart] = useState<any[]>([]);
+
+  // Ensure the cart is initialized correctly when the app loads
+  useEffect(() => {
+    const localCart = localStorage.getItem("cart");
+    if (localCart) {
+      setCart(JSON.parse(localCart)); // Initialize cart with data from localStorage
+    }
+  }, []);
+
+  // Update the cart in localStorage whenever the cart state changes
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(cart)); // Save cart to localStorage
+    }
+  }, [cart]);
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Initialize cart data */}
+      <CartInitializer setCart={setCart} /> {/* Initialize cart on app load */}
       {/* This ensures the page takes full height */}
       <Header
         cartCount={cart.reduce((total, item) => total + item.quantity, 0)}
@@ -45,12 +63,12 @@ const App = () => {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/orders" element={<Orders />} />
-          {/* <Route path="/delivery" element={<Delivery />} /> */}
           <Route path="/admin" element={<AdminRoute />}>
             <Route path="/admin/add-product" element={<AddProductPage />} />
             <Route path="/admin/new-orders" element={<AdminNewOrders />} />
             <Route path="/admin/past-orders" element={<AdminPastOrders />} />
           </Route>
+          <Route path="/delivery/orders" element={<DeliveryOrders />} />
         </Routes>
       </main>
       <Footer /> {/* This will always stay at the bottom */}
